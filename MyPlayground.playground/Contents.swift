@@ -18,20 +18,22 @@ enum VendingMachineError: Error {
     case productUnavailable
     case insufficientFunds
     case productStuck
+    case color
 }
 
 extension VendingMachineError: LocalizedError {
     var errorDescription: String? {
-        
         switch self {
         case .productNotFound:
-            return  "não foi"
+            return "Produto não foi encontrado."
         case.productUnavailable:
-            return "acabou"
-        case .insufficientFunds:
-            return "produto peso"
+            return "Produto indisponível."
         case .productStuck:
-            return "falta dinheiro"
+            return "O produto está em fase de processamento."
+        case .insufficientFunds:
+            return "Ainda falta dinheiro"
+        case .color:
+            return "Não há produtos disponíveis nesta cor"
         }
     }
 }
@@ -46,6 +48,7 @@ class VendingMachine {
     }
     
     func getProduct(named name: String, with money: Double) throws {
+        
         //TODO: receber o dinheiro e salvar em uma variável
         self.money = money
         
@@ -53,7 +56,7 @@ class VendingMachine {
         let produtoOptional = estoque.first{ (produto) -> Bool in
             return produto.name == name
         }
-        guard var produto = produtoOptional else  { throw VendingMachineError.productNotFound  }
+        guard var produto = produtoOptional else  { throw VendingMachineError.productNotFound }
         
         //TODO: ver se ainda tem esse produto
         guard produto.amount > 0 else { throw VendingMachineError.productUnavailable }
@@ -80,17 +83,19 @@ class VendingMachine {
 }
     
     let vendingMachine = VendingMachine(products: [ VendingMachineProduct(name: "Carregador de iPhone", amount: 5, price: 150.00),
-        VendingMachineProduct(name: "Funnions", amount: 2, price: 7.00),
-        VendingMachineProduct(name: "Umbrella", amount: 5, price: 125.00),
-        VendingMachineProduct(name: "Trator", amount: 1, price: 75000.00)
+        VendingMachineProduct(name: "Capa", amount: 2, price: 50.00),
+        VendingMachineProduct(name: "Fone de ouvido", amount: 5, price: 90.00),
+        VendingMachineProduct(name: "Película", amount: 1, price: 50.00)
     ])
     
     do {
-        try vendingMachine.getProduct(named: "Umbrella", with:  40.0)
-        try vendingMachine.getProduct(named: "Funnions", with:  40.0)
-    print("deu bom")
+        try vendingMachine.getProduct(named: "Capa", with:  40.0)
+        try vendingMachine.getProduct(named: "Película", with:  40.0)
+    print("Deu certo!")
+        
     } catch VendingMachineError.productStuck {
-    print("deu erro")
+    print("Ainda não deu certo")
+        
     } catch {
     print(error.localizedDescription)
 }
