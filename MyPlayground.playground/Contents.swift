@@ -1,6 +1,6 @@
 import Foundation
 
-struct VendingMachineProduct {
+class VendingMachineProduct {
     var name: String
     var amount: Int
     var price: Double
@@ -20,11 +20,13 @@ enum VendingMachineError: Error {
     case productStuck
     case color
 }
+}
 
 extension VendingMachineError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .productNotFound:
+
             return "Produto não foi encontrado."
         case.productUnavailable:
             return "Produto indisponível."
@@ -33,7 +35,7 @@ extension VendingMachineError: LocalizedError {
         case .insufficientFunds:
             return "Ainda falta dinheiro"
         case .color:
-            return "Não há produtos disponíveis nesta cor"
+ 
         }
     }
 }
@@ -65,6 +67,17 @@ class VendingMachine {
         guard produto.price <= self.money else { throw VendingMachineError.insufficientFunds }
         
         //TODO: entregar o produto
+        self.money += money
+        
+        let produtoOptional = estoque.first { (produto) -> Bool in
+            return produto.name == name
+        }
+        guard let produto = produtoOptional else { throw VendingMachineError.productNotFound }
+        
+        guard produto.amount > 0 else { throw VendingMachineError.productUnavailable }
+        
+        guard produto.price <= self.money else { throw VendingMachineError.insufficientFunds }
+ 
         self.money -= produto.price
         produto.amount -= 1
         
@@ -77,7 +90,6 @@ class VendingMachine {
         //TODO: devolver o dinheiro que não foi gasto
         let money = self.money
         self.money =  0.0
-        
         return money
     }
 }
@@ -99,5 +111,4 @@ class VendingMachine {
     } catch {
     print(error.localizedDescription)
 }
-
 
